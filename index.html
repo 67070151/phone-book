@@ -4,9 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>phone book</title>
+    <title>Phone Book</title>
     <link rel="stylesheet" href="style.css">
-    
 </head>
 
 <body>
@@ -14,22 +13,20 @@
         <h1>Phone Book</h1>
     </div>
     <div class="avatar">
-        <img src="img\R.jpg" alt="diddy">
-        <div class="notification">
-            1
-        </div>
+        <img src="img/R.jpg" alt="diddy" id="image">
+        <div class="notification">1</div>
     </div>
     <div class="name">
         <a href="https://github.com/67070151" target="_blank" id="username">Ratchaphon Khawkhiew 67070151</a>
     </div>
     <div class="input-field">
         <div class="input-group">
-            <label for="">Set Username: </label>
+            <label for="username_input">Set Username: </label>
             <input type="text" placeholder="Enter Username" id="username_input">
             <button onclick="change_username();">SET</button>
         </div>
         <div class="input-group">
-            <label for="">Set Url: </label>
+            <label for="url_input">Set URL: </label>
             <input type="text" placeholder="Enter Image URL" id="url_input">
             <button onclick="change_url();">SET</button>
         </div>
@@ -38,23 +35,107 @@
         <div class="list-input">
             <h3>Phone Number List</h3>
             <div>
-                <input type="text" placeholder="Name" name="" id="">
-                <input type="text" placeholder="Tel" name="" id="">
-                <button>ADD</button>
-                <button>EXPORT</button>
+                <input type="text" placeholder="Enter Name" id="name_input">
+                <input type="text" placeholder="Enter Phone Number" id="phone_input">
+                <button onclick="add_to_table();">ADD</button>
+                <button onclick="downloadCSV();">EXPORT</button>
             </div>
         </div>
         <div>
-            <table>
-                <tr>
-                    <th>No.</th>
-                    <th>Name</th>
-                    <th>Phone Number</th>
-                </tr>
+            <table id="phone_table" border="1">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Name</th>
+                        <th>Phone Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
             </table>
         </div>
     </div>
-    <script src="index.js"></script>
+
+    <script>
+        function change_username() {
+            let username = document.getElementById("username_input").value;
+            document.getElementById("username").innerHTML = username;
+        }
+
+        function change_url() {
+            let url_input = document.getElementById("url_input").value;
+            let image = document.getElementById("image");
+            image.src = url_input;
+        }
+
+        let count = 0;
+
+        function add_to_table() {
+            let name = document.getElementById("name_input").value;
+            let phone = document.getElementById("phone_input").value;
+
+            if (name === "" || phone === "") {
+                alert("Please fill in both fields.");
+                return;
+            }
+
+            count++;
+
+            let table = document.getElementById("phone_table").getElementsByTagName("tbody")[0];
+
+            let newRow = table.insertRow();
+
+            let cell1 = newRow.insertCell(0);
+            let cell2 = newRow.insertCell(1);
+            let cell3 = newRow.insertCell(2);
+
+            cell1.innerHTML = count;
+            cell2.innerHTML = name;
+            cell3.innerHTML = phone;
+
+            document.getElementById("name_input").value = "";
+            document.getElementById("phone_input").value = "";
+        }
+
+        function downloadCSV() {
+            let table = document.getElementById("phone_table");
+            let rows = table.querySelectorAll("tr");
+
+            let csv = [];
+
+            // Loop through table rows
+            for (let i = 0; i < rows.length; i++) {
+                let row = [];
+                let cols = rows[i].querySelectorAll("th, td");
+
+                // Loop through columns
+                for (let j = 0; j < cols.length; j++) {
+                    row.push(cols[j].innerText);
+                }
+
+                // Add the row to the CSV array
+                csv.push(row.join(","));
+            }
+
+            // Convert CSV array to string
+            let csvString = csv.join("\n");
+
+            // Create a blob of CSV data
+            let blob = new Blob([csvString], { type: "text/csv" });
+
+            // Create a link to download the CSV file
+            let downloadLink = document.createElement("a");
+            downloadLink.href = URL.createObjectURL(blob);
+            downloadLink.download = "phone_book.csv";
+
+            // Programmatically click the link to trigger the download
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+
+            // Remove the link after download
+            document.body.removeChild(downloadLink);
+        }
+    </script>
 </body>
 
 </html>
